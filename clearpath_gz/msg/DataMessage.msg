@@ -1,0 +1,17 @@
+float32 x_true
+float32 y_true
+float32 z_true
+float32 qx_true
+float32 qy_true
+float32 qz_true
+float32 qw_true
+float32 gps_lat
+float32 gps_lon
+float32 gps_alt
+float32 x_ekf
+float32 y_ekf
+float32 z_ekf
+float32 qx_ekf
+float32 qy_ekf
+float32 qz_ekf
+float32 qw_ekf

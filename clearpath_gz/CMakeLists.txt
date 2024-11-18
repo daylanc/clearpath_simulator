@@ -7,12 +7,32 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclpy REQUIRED)                      # DAYLAN
+find_package(rosidl_default_generators REQUIRED)  # DAYLAN
+
+# DAYLAN: Install Python Scripts
+install(
+    PROGRAMS
+        src/clearpath_gz/waypoint_navigation.py
+        src/clearpath_gz/gps_target.py
+        src/clearpath_gz/target_detection.py
+        src/clearpath_gz/target_tracking.py
+        src/clearpath_gz/gps_target_race_track.py
+        src/clearpath_gz/save_data.py
+        src/clearpath_gz/path_following.py
+    DESTINATION lib/${PROJECT_NAME}
+)
 
 install(
   DIRECTORY config launch worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
+# DAYLAN: Add custom messages to package
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/GPSTarget.msg"
+  "msg/DataMessage.msg"
+)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

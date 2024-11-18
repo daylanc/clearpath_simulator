@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='ASCII'?>
+<sdf version='1.7'>
+  <world name='empty_world'>
+    <physics type="ode">
+      <max_step_size>0.003</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin name='ignition::gazebo::systems::Physics' filename='libignition-gazebo-physics-system.so'/>
+    <plugin name='ignition::gazebo::systems::UserCommands' filename='libignition-gazebo-user-commands-system.so'/>
+    <plugin name='ignition::gazebo::systems::SceneBroadcaster' filename='libignition-gazebo-scene-broadcaster-system.so'/>
+    <plugin name="ignition::gazebo::systems::Sensors" filename="libignition-gazebo-sensors-system.so">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin name="ignition::gazebo::systems::Imu" filename="libignition-gazebo-imu-system.so"/>
+    <plugin name="ignition::gazebo::systems::NavSat" filename="libignition-gazebo-navsat-system.so"/>
+
+    <scene>
+      <ambient>1 1 1 1</ambient>
+      <background>0.3 0.7 0.9 1</background>
+      <shadows>0</shadows>
+      <grid>false</grid>
+    </scene>
+
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Coorinates of rover start location -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <!-- NIWC: 21.377770, -157.967556 -->
+      <!-- La Conca Go Kart Track: 40.129355, 18.349940-->
+      <latitude_deg>40.129355</latitude_deg>
+      <longitude_deg>18.349940</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+
+    <!-- Ground Plane -->
+    <model name='ground_plane'>
+      <static>true</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0.0 0.0 1</normal>
+              <size>50 50</size>
+            </plane>
+          </geometry>
+          
+          <!-- Friction -->
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>                <!-- Coeffiecient of friction -->
+                <mu2>1.0</mu2>              <!-- Secondary friction coefficient (for anisotropic friction)-->
+              </ode>
+              <torsional>
+                <ode>
+                  <slip>0.0</slip>          <!-- Amount of slip (higher values mean more sliding)-->
+                  <friction>1.0</friction>  <!-- Torsional friction coefficient -->
+                </ode>
+              </torsional>
+            </friction>
+            <contact>
+              <ode>
+                <kp>100000.0</kp>         <!-- Stiffness of the contact surface -->
+                <kd>1.0</kd>              <!-- Damping of the contact surface -->
+              </ode>
+            </contact>
+          </surface>
+        </collision>
+
+        <!-- DAYLAN: add path_following_track -->
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0.0 0.0 1</normal>
+              <size>50 50</size>
+            </plane>
+          </geometry>
+          <material>
+            <!-- DAYLAN: Change colors/lighting of ground plane -->
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+            <emissive>0 0 0 1</emissive>
+            <pbr>
+              <metal>
+                <!-- DAYLAN: insert image on ground plane -->
+                <albedo_map>/home/mors/clearpath_ws/src/clearpath_simulator/clearpath_gz/worlds/texture/path_following_track.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+      <!-- DAYLAN: Shift pose of ground plane to have rover start at starting line -->
+      <pose>0 0 0 0 0 0</pose>
+    </model>
+
+  </world>
+</sdf>
+

@@ -90,6 +90,25 @@ def generate_launch_description():
             os.path.join(pkg_clearpath_gz, 'worlds'),
             ':' + ':'.join(packages_paths)])
 
+    # Paths
+    gz_sim_launch = PathJoinSubstitution(
+        [pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'])
+
+    gui_config = PathJoinSubstitution(
+        [pkg_clearpath_gz, 'config', 'gui.config'])
+
+    # Gazebo Simulator
+    gz_sim = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([gz_sim_launch]),
+        launch_arguments=[
+            ('gz_args', [LaunchConfiguration('world'),
+                         '.sdf',
+                         ' -v 4 -r',    # DAYLAN added "-r" flag to run simulation from start
+                         ' --gui-config ',
+                         gui_config])
+        ]
+    )
+
     # Clock bridge
     clock_bridge = Node(package='ros_gz_bridge',
                         executable='parameter_bridge',
@@ -98,10 +117,27 @@ def generate_launch_description():
                         arguments=[
                           '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'
                         ])
+    
+    # DAYLAN: Ground Truth Position Bridge
+    pose_bridge = Node(package='ros_gz_bridge',
+                       executable='parameter_bridge',
+                       name='pose_bridge',
+                       output='screen',
+                       arguments=[
+                         '/model/a200_0000/robot/pose@geometry_msgs/msg/PoseArray[ignition.msgs.Pose_V'  
+                       ])
+    
+    # DAYLAN: Launch save_data.py
+    data_node = Node(
+        package="clearpath_gz",
+        executable="save_data.py"
+    )
 
     # Create launch description and add actions
     ld = LaunchDescription(ARGUMENTS)
     ld.add_action(gz_sim_resource_path)
     ld.add_action(OpaqueFunction(function=gz_launch))
     ld.add_action(clock_bridge)
+    ld.add_action(pose_bridge)      # DAYLAN
+    ld.add_action(data_node)        # DAYLAN
     return ld
